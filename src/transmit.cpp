@@ -297,8 +297,21 @@
 
 #ifdef HEATSEEK_BORON_LTE
 
-  bool _transmit(float temperature_f, float humidity, float heat_index, uint32_t current_time) {
-    return false;
+  bool _transmit(float temperature_f, float humidity, float heat_index, uint32_t current_time) {    
+    String data = "{ \"temp\": \"" + String(temperature_f, 3) + "\", \"humidity\": \"" + String(humidity,3) + "\", \"heat_index\": \"" + String(heat_index, 3) + "\", \"hub\": \"" + CONFIG.data.hub_id + "\", \"cell\": \"" + CONFIG.data.cell_id + "\", \"time\": \"" + current_time + "\", \"sp\": \"" + CONFIG.data.reading_interval_s + "\", \"cell_version\": \"" + CODE_VERSION + "\"}";
+    
+    if (!Cellular.ready()) {
+      Cellular.on();
+      Cellular.connect();
+    }
+
+    if (Cellular.ready()) {
+      Particle.publish("Transmit", data, PRIVATE);
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 
 #endif
@@ -409,7 +422,11 @@ void transmit_queued_temps() {
     File entry = pending_dir.openNextFile();
     if (!entry) { break; } // No more files
     
+    #ifdef HEATSEEK_BORON_LTE
+    entry.getName(filename, 100);
+    #else
     strcpy(filename, entry.name());
+    #endif
     entry.close();
     
     transmit_queued_temp(filename);
@@ -430,7 +447,11 @@ void clear_queued_transmissions() {
     if (!entry) { break; } // No more files
 
     char filename[100];
+    #ifdef HEATSEEK_BORON_LTE
+    entry.getName(filename, 100);
+    #else
     strcpy(filename, entry.name());
+    #endif
     entry.close();
 
     char file_path[100];

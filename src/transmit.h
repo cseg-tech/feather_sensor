@@ -1,7 +1,7 @@
 #ifndef TRANSMIT_H
 #define TRANSMIT_H
 
-#define CODE_VERSION "F-1.2.0"
+#define CODE_VERSION "F-1.3.0"
 
 #include <Particle.h>
 #include "user_config.h"
@@ -49,7 +49,7 @@
 
 #ifdef HEATSEEK_BORON_LTE
   #define DHT_DATA  A2
-  #define SD_CS     10
+  #define SD_CS     D5
 
   #define TRANSMITS_PER_LOOP 5
 

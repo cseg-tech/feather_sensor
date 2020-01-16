@@ -5,7 +5,7 @@
 
 #ifdef HEATSEEK_BORON_LTE
 #include <SdFat.h>
-#include <Adafruit_DHT.h>
+#include <PietteTech_DHT.h>
 #else
 #include <SD.h>
 #include <DHT.h>
@@ -16,7 +16,11 @@
 #include "watchdog.h"
 #include "rtc.h"
 
+#ifdef HEATSEEK_BORON_LTE
+static PietteTech_DHT dht(DHT_DATA, DHT22);
+#else
 static DHT dht(DHT_DATA, DHT22);
+#endif
 uint32_t startup_millis = 0;
 
 void setup() {
@@ -108,7 +112,39 @@ void read_temperatures(float *temperature_f, float *humidity, float *heat_index)
     bool success = true;
 
     #ifdef HEATSEEK_BORON_LTE
-    *temperature_f = dht.getTempFarenheit();
+    int result = dht.acquireAndWait(1000);
+
+    switch (result) {
+    case DHTLIB_OK:
+      Serial.println("OK");
+      break;
+    case DHTLIB_ERROR_CHECKSUM:
+      Serial.println("Error\n\r\tChecksum error");
+      break;
+    case DHTLIB_ERROR_ISR_TIMEOUT:
+      Serial.println("Error\n\r\tISR time out error");
+      break;
+    case DHTLIB_ERROR_RESPONSE_TIMEOUT:
+      Serial.println("Error\n\r\tResponse time out error");
+      break;
+    case DHTLIB_ERROR_DATA_TIMEOUT:
+      Serial.println("Error\n\r\tData time out error");
+      break;
+    case DHTLIB_ERROR_ACQUIRING:
+      Serial.println("Error\n\r\tAcquiring");
+      break;
+    case DHTLIB_ERROR_DELTA:
+      Serial.println("Error\n\r\tDelta time to small");
+      break;
+    case DHTLIB_ERROR_NOTSTARTED:
+      Serial.println("Error\n\r\tNot started");
+      break;
+    default:
+      Serial.println("Unknown error");
+      break;
+    }
+
+    *temperature_f = dht.getFahrenheit();
     *humidity = dht.getHumidity();
     #else
     *temperature_f = dht.readTemperature(true);
@@ -129,10 +165,14 @@ void read_temperatures(float *temperature_f, float *humidity, float *heat_index)
       Serial.print(*humidity);
       Serial.println("%");
       
+      #ifdef HEATSEEK_BORON_LTE
+      *heat_index = 0;
+      #else
       *heat_index = dht.computeHeatIndex(*temperature_f, *humidity);
       
       Serial.print("Heat index: ");
       Serial.println(*heat_index);
+      #endif
 
       return;
       

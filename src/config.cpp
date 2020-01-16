@@ -3,7 +3,7 @@
 #include "user_config.h"
 
 #ifdef HEATSEEK_BORON_LTE
-#include <Adafruit_DHT.h>
+#include <PietteTech_DHT.h>
 #include <SdFat.h>
 SdFat SD;
 #else
@@ -20,7 +20,11 @@ char const* get_encryption_str(int32_t enc_type);
 #endif
 
 CONFIG_union CONFIG;
+#ifdef HEATSEEK_BORON_LTE
+static PietteTech_DHT dht(DHT_DATA, DHT22);
+#else
 static DHT dht(DHT_DATA, DHT22);
+#endif
 
 void write_config() {
   File config_file;
@@ -358,7 +362,7 @@ void enter_configuration() {
             watchdog_feed();
             Serial.println("Calibrating, please wait...");
             #ifdef HEATSEEK_BORON_LTE
-            temperature_f = dht.getTempFarenheit();
+            temperature_f = dht.getFahrenheit();
             #else
             temperature_f = dht.readTemperature(true);
             #endif
