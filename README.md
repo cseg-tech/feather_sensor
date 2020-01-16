@@ -1,13 +1,31 @@
 # Heatseek Feather Sensor
 
+## Version Notes
+
+This is a sensor firmware version intended for the Particle Boron LTE. It should still be back-compatible with other boards, since all Particle-specific code is wrapped in user-defined configuration flags. The following list will be updated if back-compatibility has been confirmed with each individual board:
+
+* N/A, TODO
+
+The flag used for Particle-specific code is `#define HEATSEEK_BORON_LTE` in `user_config.h`. By searching for this flag in the code, you should be able to find all modifications. Some notable changes are:
+
+- The SD and DHT libraries had to be replaced with Particle-specific libraries, which have different APIs. The RTC library was also replaced, but there were no API changes.
+- A new `_transmit()` function in `transmit.cpp` using Particle Webhooks.
+- The DHT library used does not support heat index calculation. This is just a function, so it could be implemented if needed.
+
+Particle LTE currently works in North America.
+
 ## Building Project
 
-1. Ensure you're on (at least) version 1.6.13 of the Arduino IDE
-1. Place the contents of the libraries directory in your Arduino user libraries directory.  (Usually `~/Documents/Arduino/libraries`)
-1. Set up WICED Feather using [steps here](https://learn.adafruit.com/introducing-the-adafruit-wiced-feather-wifi/).
-1. Set up M0 Feather using [steps here](https://learn.adafruit.com/adafruit-feather-m0-basic-proto/setup).
-1. Set up M0 WiFi Feather using [steps here](https://learn.adafruit.com/adafruit-feather-m0-wifi-atwinc1500/using-the-wifi-module). Be sure to do the version check as described.
-1. In `user_config.h`, uncomment the appropriate line depending on which microprocessor board you are using.  Only one board type line in this file should be uncommented.
+1. This code was written, compiled, and flashed with the Particle Workbench and Visual Studio Code 1.41.1. Download it [here](https://www.particle.io/workbench/)
+2. Install the required libraries via the workbench's `Install Library` command:
+  - SdFat=1.0.16
+  - Adafruit_RTClib_RK=1.2.1
+  - PietteTech_DHT=0.0.12
+3. Confirm `user_config.h` has only `#define HEATSEEK_BORON_LTE` uncommented.
+4. Configure workbench for device with `Configure for device`, using the latest DeviceOS.
+5. Local Compile with `Local Compile`
+6. Local Flash with `Local Flash` (given the sensor is connected)
+7. For deployment to multiple devices, all devices can be flashed over-the-air with `Cloud Compile` and `Cloud Flash`. 
 
 ## Software
 
@@ -54,6 +72,10 @@
 - [Sticker Antenna](https://www.adafruit.com/product/3237)
 - [SIM800L GSM Breakout Module](http://www.ebay.com/itm/SIM800L-Quad-band-Network-Mini-GPRS-GSM-Breakout-Module-Ships-from-California-/172265821650?hash=item281bd7d5d2:g:97gAAOSwls5Y5qFG)
 
+### Particle Boron LTE
+
+- All base parts
+- [Boron LTE w/ Antenna](https://store.particle.io/collections/cellular/products/boron-lte)
 
 ### Headseek Featherwing Board
 
