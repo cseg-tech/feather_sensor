@@ -2,6 +2,8 @@
 
 ## Version Notes
 
+### Description
+
 This is a sensor firmware version intended for the Particle Boron LTE. It should still be back-compatible with other boards, since all Particle-specific code is wrapped in user-defined configuration flags. The following list will be updated if back-compatibility has been confirmed with each individual board:
 
 * N/A, TODO
@@ -13,6 +15,11 @@ The flag used for Particle-specific code is `#define HEATSEEK_BORON_LTE` in `use
 - The DHT library used does not support heat index calculation. This is just a function, so it could be implemented if needed.
 
 Particle LTE currently works in North America.
+
+### Contributors
+- Jake Lee (@jakehlee), Primary Contact (jake.h.lee@columbia.edu)
+- Julia Guo (@julia-guo)
+- Shruti Verma (@ShrutiVerma17)
 
 ## Building Project
 
